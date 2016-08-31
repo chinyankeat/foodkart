@@ -1,0 +1,246 @@
+{
+    "category": {
+        "cat1": {
+            "name": "Breakfast"
+            , "image": "breakfast"
+        }        
+        , "cat2": {
+            "name": "Pasta"
+            , "image": "pasta"
+        }
+        , "cat3": {
+            "name": "Pizza, Pies & Others"
+            , "image": "pizza_pies"
+        }
+        , "cat4": {
+            "name": "Mdm Lim Kitchen"
+            , "image": "mdm_lim_kitchen"
+        }
+        , "cat5": {
+            "name": "Beverages"
+            , "image": "beverages"
+        }
+        , "cat6": {
+            "name": "Cakes"
+            , "image": "cakes"
+        }
+    }
+    , "featured": {
+        "item1": "slide_1"
+        , "item2": "slide_2"
+    }
+    , "menu": {
+        "item1": {
+            "available": true
+            , "category": "cat1"
+            , "name": "Rice Roll Noodle / Chee Cheong Fun"
+            , "description": "Freshly made Chee Cheong Fun with sauce, chili sauce & sesame seed"
+            , "price": 300
+        }
+        , "item2": {
+            "available": true
+            , "category": "cat1"
+            , "name": "Grab & Go Sandwich"
+            , "description": "Wholemeal bread sandwich Egg / Tuna Mayo / Chicken Ham & Cheese"
+            , "price": 500
+            , "options" : {
+                "option1": {
+                    "name": "Egg Mayo Sandwich RM5"   
+                    , "price": 500
+                }
+                , "option2": {
+                    "name": "Tuna Mayo Sandwich RM5"
+                    , "price": 500
+                }
+                , "option3": {
+                    "name":"Chicken Ham & Cheese Sandwich RM6"
+                    , "price": 600
+                }
+            }
+        }
+        , "item3": {
+            "available": true
+            , "category": "cat1"
+            , "name": "Zero 16"
+            , "description": "2 eggs, sausage, baked beans, mushroom & toast and butter"
+            , "price": 800
+        }
+        , "item4": {
+            "available": true
+            , "category": "cat1"
+            , "name": "Croissant & Coffee"
+            , "description": "Freshly baked croissant with jam. Comes with Americano / Latte / Tea"
+            , "price": 800
+            , "options" : {
+                "option1": {
+                    "name": "Americano"
+                    , "price": 800
+                }
+                , "option2": {
+                    "name": "Latte"
+                    , "price": 800
+                }
+                , "option3": {
+                    "name": "Tea"
+                    , "price": 800
+                }
+            }
+        }
+        , "item5": {
+            "available": true
+            , "category": "cat1"
+            , "name": "Muffin & Coffee"
+            , "description": "Freshly baked jumbo muffin. Comes with Americano / Latte / Tea"
+            , "price": 800
+            , "options" : {
+                "option1": {
+                    "name": "Muffin + Americano"
+                    , "price": 800
+                }
+                , "option2": {
+                    "name": "Muffin + Latte"
+                    , "price": 800
+                }
+                , "option3": {
+                    "name": "Muffin + Tea"
+                    , "price": 800
+                }
+            }
+        }
+        , "item6": {
+            "available": true
+            , "category": "cat1"
+            , "name": "Jumbo Croissant"
+            , "description": "Jumbo Croissant with Portion Jam"
+            , "price": 600
+        }
+        , "item7": {
+            "available": true
+            , "category": "cat1"
+            , "name": "Jumbo Muffins"
+            , "description": "Chocolate / Blueberry / Banana Oat"
+            , "price": 600
+            , "options" : {
+                "option1": {
+                    "name": "Chocolate"
+                    , "price": 800
+                }
+                , "option2": {
+                    "name": "Blueberry"
+                    , "price": 800
+                }
+                , "option3": {
+                    "name": "Banana Oat"
+                    , "price": 800
+                }
+            }
+        }
+        , "item8": {
+            "available": true
+            , "category": "cat1"
+            , "name": "Sweet Waffles"
+            , "description": "with Jam & Butter"
+            , "price": 600
+            , "options" : {
+                "option1": {
+                    "name": "Normal"
+                    , "price": 600
+                }
+                , "option2": {
+                    "name": "Sweet Waffles + Vanilla Ice Cream"
+                    , "price": 800
+                }
+            }
+        }
+        , "item9": {
+            "available": true
+            , "category": "cat2"
+            , "name": "Vegetarian - Classic Aglio Olio (v)spicy"
+            , "description": "Sauteed garlic, mushrooms, cherry tomatoes & chili"
+            , "price": 900
+        }
+        , "item10": {
+            "available": true
+            , "category": "cat2"
+            , "name": "Vegetarian - Classic Presto"
+            , "description": "Homemade pesto (basil, arugula, nuts & parmesan)"
+            , "price": 900
+        }
+        , "item11": {
+            "available": true
+            , "category": "cat2"
+            , "name": "Special Pasta - Chicken Bolognese"
+            , "description": "Slow cooked lean minced chicken with tomato stey & herbs"
+            , "price": 1000
+        }
+        , "item12": {
+            "available": true
+            , "category": "cat3"
+            , "name": "Margherita (10in thin crust pizza)"
+            , "description": "tomato, basil & pesto with lots of cheese"
+            , "price": 1300
+        }
+        , "item13": {
+            "available": true
+            , "category": "cat4"
+            , "name": "Black pepper chicken"
+            , "description": "Black pepper sauce on chicken. Served with salad & brown rice"
+            , "price": 1000
+        }
+        , "item14": {
+            "available": true
+            , "category": "cat4"
+            , "name": "Thai Style Chicken"
+            , "description": "Thai chili sauce on chicken. Served with saled & brown rice"
+            , "price": 1000
+        }
+        , "item15": {
+            "available": true
+            , "category": "cat4"
+            , "name": "Sweet & Sour Chicken"
+            , "description": "Home made teriyaki sauce with roasted boneless chicken & toasted sesame. Served with pickled cucumber & brown rice"
+            , "price": 1000
+        }
+        , "item16": {
+            "available": true
+            , "category": "cat5"
+            , "name": "Coffee"
+            , "description": "Americano (Hot / Cold)"
+            , "price": 500
+            , "option": {
+                "option1": {
+                    "name": "Hot"
+                    , "price": 500
+                }
+                , "option2": {
+                    "name": "Cold"
+                    , "price": 500
+                }
+            }
+        }
+        , "item17": {
+            "available": true
+            , "category": "cat5"
+            , "name": "Coffee"
+            , "description": "Expresso (Hot)"
+            , "price": 500
+            , "option": {
+                "option1": {
+                    "name": "Normal Shot"
+                    , "price": 500
+                }
+                , "option2": {
+                    "name": "Extra Shot (+RM2)"
+                    , "price": 700
+                }
+            }
+        }
+        , "item18": {
+            "available": true
+            , "category": "cat5"
+            , "name": "Coffee"
+            , "description": "Affogato (Cold)"
+            , "price": 500
+        }
+    }
+}

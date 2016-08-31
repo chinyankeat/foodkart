@@ -2,13 +2,13 @@ angular.module('app.services', [])
 
 
 .factory('fireBaseData', function($firebase) {
-	var ref = new Firebase("https://whycare-1c8b6.firebaseio.com/"),
-    refCart = new Firebase("https://whycare-1c8b6.firebaseio.com/cart"),
-    refUser = new Firebase("https://whycare-1c8b6.firebaseio.com/users"),
-    refCategory = new Firebase("https://whycare-1c8b6.firebaseio.com/category"),
-    refOrder = new Firebase("https://whycare-1c8b6.firebaseio.com/orders"),
-    refFeatured = new Firebase("https://whycare-1c8b6.firebaseio.com/featured"),
-    refMenu = new Firebase("https://whycare-1c8b6.firebaseio.com/menu");
+	var ref = new Firebase("https://eatat-d0089.firebaseio.com/"),
+    refCart = new Firebase("https://eatat-d0089.firebaseio.com/cart"),
+    refUser = new Firebase("https://eatat-d0089.firebaseio.com/users"),
+    refCategory = new Firebase("https://eatat-d0089.firebaseio.com/category"),
+    refOrder = new Firebase("https://eatat-d0089.firebaseio.com/orders"),
+    refFeatured = new Firebase("https://eatat-d0089.firebaseio.com/featured"),
+    refMenu = new Firebase("https://eatat-d0089.firebaseio.com/menu");
   return {
     ref: function() {
       return ref;
@@ -105,7 +105,6 @@ angular.module('app.services', [])
           //if item is new in the cart
           fireBaseData.refCart().child(uid).child(item.$id).set({    // set
             item_name: item.name,
-            item_image: item.image,
             item_price: item.price,
             item_qty: 1
           });

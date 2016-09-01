@@ -1,6 +1,7 @@
 angular.module('app.controllers', [])
 
-.controller('loginCtrl', function ($scope, $rootScope, $ionicHistory, sharedUtils, $state, $ionicSideMenuDelegate) {
+
+.controller('loginCtrl', function ($scope, $rootScope, $ionicHistory, sharedUtils, $state, fireBaseData, $ionicSideMenuDelegate) {
     $rootScope.extras = false; // For hiding the side bar and nav icon
 
     // When the user logs out and reaches login page,
@@ -75,6 +76,30 @@ angular.module('app.controllers', [])
 
     $scope.loginFb = function () {
         //Facebook Login
+        firebase.auth().signInWithPopup(fireBaseData.refFbProvider()).then(function (result) {
+            // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+
+            $ionicHistory.nextViewOptions({
+                historyRoot: true
+            });
+            $rootScope.extras = true;
+            $state.go('menu2', {}, {
+                location: "replace"
+            });        
+        
+        }).catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            sharedUtils.showAlert("Sorry", "Unable to sign in with Facebook due to " + user.message);
+        })
     };
 
     $scope.loginGmail = function () {
@@ -131,10 +156,34 @@ angular.module('app.controllers', [])
     }
 
     $scope.signupFacebook = function () {
+        firebase.auth().signInWithPopup(fireBaseData.refFbProvider()).then(function (result) {
+            // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+
+            $ionicHistory.nextViewOptions({
+                historyRoot: true
+            });
+            $rootScope.extras = true;
+            $state.go('menu2', {}, {
+                location: "replace"
+            });        
         
+        }).catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // The email of the user's account used.
+            var email = error.email;
+            // The firebase.auth.AuthCredential type that was used.
+            var credential = error.credential;
+            sharedUtils.showAlert("Sorry", "Unable to sign in with Facebook due to " + user.message);
+        })
     }
 })
 
+    
 // Display and control the main category page
 .controller('menu2Ctrl', function ($scope, $rootScope, $ionicSideMenuDelegate, fireBaseData, $state
     , $ionicHistory, $firebaseArray, sharedCartService, sharedUtils) {
@@ -176,11 +225,14 @@ angular.module('app.controllers', [])
         sharedUtils.showLoading();
         $scope.menu = $firebaseArray(fireBaseData.refMenu());
         $scope.category = $firebaseArray(fireBaseData.refCategory());
+        $scope.current_cat = 'cat1';
         sharedUtils.hideLoading();
     }
 
-    $scope.showCategoryItem = function (id) {
-        $scope.current_category = id; //Save current category id
+    $scope.showCategoryItem = function (category_id) {
+        $scope.current_cat = category_id; //Save current category id
+sharedUtils.showAlert('cat', $scope.current_cat);        
+
         $state.go('categoryitem', {}, {
             location: "replace"
         });
@@ -584,18 +636,16 @@ angular.module('app.controllers', [])
         {
             id: 'CREDIT'
             , name: 'Credit Card'
-}
-
+        }
         , {
             id: 'NETBANK'
             , name: 'Net Banking'
-}
-
+        }
         , {
             id: 'COD'
             , name: 'COD'
-}
-];
+        }
+    ];
 
     $scope.pay = function (address, payment) {
 

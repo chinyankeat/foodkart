@@ -48,6 +48,12 @@ angular.module('app.routes', [])
     controller: 'categoryitemCtrl'
   })
 
+  .state('subcategoryitem', {
+    url: '/page18',
+    templateUrl: 'templates/subcategoryitem.html',
+    controller: 'subcategoryitemCtrl'
+  })
+
   .state('offers', {
     url: '/page8',
     templateUrl: 'templates/offers.html',

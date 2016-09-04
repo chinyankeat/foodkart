@@ -225,14 +225,17 @@ angular.module('app.controllers', [])
         sharedUtils.showLoading();
         $scope.menu = $firebaseArray(fireBaseData.refMenu());
         $scope.category = $firebaseArray(fireBaseData.refCategory());
-        $scope.current_cat = 'cat1';
         sharedUtils.hideLoading();
     }
 
     $scope.showCategoryItem = function (category_id) {
-        $scope.current_cat = category_id; //Save current category id
-sharedUtils.showAlert('cat', $scope.current_cat);        
+        $rootScope.current_category = category_id; //Save current category id
 
+        // load the name of current category
+        fireBaseData.refCategory().child(category_id).once("value", function(snapshot){
+            $rootScope.category_name = snapshot.val().name;
+        });
+        
         $state.go('categoryitem', {}, {
             location: "replace"
         });
@@ -282,11 +285,89 @@ sharedUtils.showAlert('cat', $scope.current_cat);
         sharedUtils.showLoading();
         $scope.menu = $firebaseArray(fireBaseData.refMenu());
         $scope.category = $firebaseArray(fireBaseData.refCategory());
+
+        $scope.current_category = $rootScope.current_category;
+        $scope.category_name = $rootScope.category_name;
+        
         sharedUtils.hideLoading();
     }
 
     $scope.addToCart = function (item) {
-        sharedCartService.add(item);
+
+        // Check if there are subcategory
+        
+        fireBaseData.refMenu().child(item.$id).once("value", function (snapshot) {
+            if(snapshot.val().subcategory) {
+                // This item has subcategory. Let's bring up the subcategory menu
+                $rootScope.current_subcategory = item.$id+'_subcategory'; //Save current category id
+                $rootScope.item_name = snapshot.val().name;
+
+                $state.go('subcategoryitem', {}, {
+                    location: "replace"
+                });
+                return;
+            }
+            else {
+                // else, add the item to cart
+                sharedCartService.add(item);    
+            }
+        });
+    };
+
+})
+
+// Display options for the selected item
+.controller('subcategoryitemCtrl', function ($scope, $rootScope, $ionicSideMenuDelegate, fireBaseData, $state
+    , $ionicHistory, $firebaseArray, sharedCartService, sharedUtils) {
+
+    //Check if user already logged in
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            $scope.user_info = user; //Saves data to user_info
+        } else {
+
+            $ionicSideMenuDelegate.toggleLeft(); //To close the side bar
+            $ionicSideMenuDelegate.canDragContent(false); // To remove the sidemenu white space
+
+            $ionicHistory.nextViewOptions({
+                historyRoot: true
+            });
+            $rootScope.extras = false;
+            sharedUtils.hideLoading();
+            $state.go('tabsController.login', {}, {
+                location: "replace"
+            });
+
+        }
+    });
+
+    // On Loggin in to menu page, the sideMenu drag state is set to true
+    $ionicSideMenuDelegate.canDragContent(true);
+    $rootScope.extras = true;
+
+    // When user visits A-> B -> C -> A and clicks back, he will close the app instead of back linking
+    $scope.$on('$ionicView.enter', function (ev) {
+        if (ev.targetScope !== $scope) {
+            $ionicHistory.clearHistory();
+            $ionicHistory.clearCache();
+        }
+    });
+
+    $scope.loadCategoryAndMenu = function () {
+        sharedUtils.showLoading();
+        $scope.menu = $firebaseArray(fireBaseData.refMenu());
+        $scope.category = $firebaseArray(fireBaseData.refCategory());
+
+        $scope.current_subcategory = $rootScope.current_subcategory;
+        $scope.item_name = $rootScope.item_name;
+
+        sharedUtils.hideLoading();
+    }
+
+    $scope.addToCart = function (item) {
+
+        // Check if there are subcategory        
+        sharedCartService.add(item);    
     };
 
 })
@@ -366,7 +447,7 @@ sharedUtils.showAlert('cat', $scope.current_cat);
 })
 
 
-.controller('myCartCtrl', function ($scope, $rootScope, $state, sharedCartService) {
+.controller('myCartCtrl', function ($scope, $rootScope, fireBaseData, $state, sharedCartService, sharedUtils) {
 
     $rootScope.extras = true;
 
@@ -375,6 +456,7 @@ sharedUtils.showAlert('cat', $scope.current_cat);
         if (user) {
 
             $scope.cart = sharedCartService.cart_items; // Loads users cart
+            $scope.user_info = user;
 
             $scope.get_qty = function () {
                 $scope.total_qty = 0;
@@ -408,8 +490,47 @@ sharedUtils.showAlert('cat', $scope.current_cat);
         });
     };
 
+    $scope.placeOrder = function () {
+        
+        var newOrder = fireBaseData.refOrder().push();
+        var totalItems = 0;
+        var totalPrice = 0;
+        var currentDate = new Date();
+        var currentTime = currentDate.getTime();
+        var jsonOrderList = {};
 
+        // UPDATE for the rest of the items to the JSON
+        jsonOrderList.name = $scope.user_info.displayName;
+        jsonOrderList.timeDate = currentTime; 
+        jsonOrderList.orderStatus = 'pending';
+        jsonOrderList.item = [];
+        for (var i = 0; i < sharedCartService.cart_items.length; i++) {
+            var jsonOrderItem = {};
+            var orderKey = 'item'+i;
+            jsonOrderItem.itemName = sharedCartService.cart_items[i].item_name;
+            jsonOrderItem.itemPrice = sharedCartService.cart_items[i].item_price;
+            jsonOrderItem.itemQty = sharedCartService.cart_items[i].item_qty;
+            
+            jsonOrderList["item"].push(jsonOrderItem);
+            
+            totalPrice += sharedCartService.cart_items[i].item_qty * sharedCartService.cart_items[i].item_price;
+            totalItems += sharedCartService.cart_items[i].item_qty;
+        }
+        newOrder.set(jsonOrderList);
 
+        // Remove items in the cart 
+        fireBaseData.refCart().child($scope.user_info.uid).remove();
+
+        // Store our order reference
+        fireBaseData.refOrderHistory().child($scope.user_info.uid).push({
+            timeDate: currentTime
+            , key: newOrder.key()
+        });
+        
+        sharedUtils.showAlert("Done ", 
+            "You have placed order for " + totalItems + 
+            " items. Total price is RM" + totalPrice/100 + ". We shall confirm & inform you when your order is ready");
+    };
 })
 
 .controller('lastOrdersCtrl', function ($scope, $rootScope, fireBaseData, sharedUtils) {
@@ -432,9 +553,10 @@ sharedUtils.showAlert('cat', $scope.current_cat);
             sharedUtils.hideLoading();
         }
     });
-
-
-
+    
+    $scope.initLastOrders(){
+        
+    }
 
 
 })
@@ -661,7 +783,6 @@ sharedUtils.showAlert('cat', $scope.current_cat);
                     //Product data is hardcoded for simplicity
                     product_name: sharedCartService.cart_items[i].item_name
                     , product_price: sharedCartService.cart_items[i].item_price
-                    , product_image: sharedCartService.cart_items[i].item_image
                     , product_id: sharedCartService.cart_items[i].$id,
 
                     //item data

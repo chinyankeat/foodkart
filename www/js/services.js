@@ -1,37 +1,53 @@
 angular.module('app.services', []).factory('fireBaseData', function ($firebase) {
     var ref = new Firebase("https://eatat-d0089.firebaseio.com/")
-        , refCart = new Firebase("https://eatat-d0089.firebaseio.com/cart")
+
+        // DataStore for Firebase, user login
         , refUser = new Firebase("https://eatat-d0089.firebaseio.com/users")
-        , refCategory = new Firebase("https://eatat-d0089.firebaseio.com/category")
-        , refOrder = new Firebase("https://eatat-d0089.firebaseio.com/orders")
+        , refFbProvider = new firebase.auth.FacebookAuthProvider()
+    
+        // DataStore for each user
+        , refCart = new Firebase("https://eatat-d0089.firebaseio.com/cart")
+        , refOrderHistory = new Firebase("https://eatat-d0089.firebaseio.com/orderHistory")
         , refFeatured = new Firebase("https://eatat-d0089.firebaseio.com/featured")
+
+        // DataStore for Restaurant
+        , refCategory = new Firebase("https://eatat-d0089.firebaseio.com/category")
         , refMenu = new Firebase("https://eatat-d0089.firebaseio.com/menu")
-        , refFbProvider = new firebase.auth.FacebookAuthProvider();
-    refFbProvider.addScope('user_birthday');
+        , refStoreControl = new Firebase("https://eatat-d0089.firebaseio.com/storeControl")
+        , refOrder = new Firebase("https://eatat-d0089.firebaseio.com/orders")
+    
+    // what scope we want to add in, so that we request these from FB Profile
+    refFbProvider.addScope('public_profile, email');
     return {
         ref: function () {
             return ref;
         }
-        , refCart: function () {
-            return refCart;
-        }
         , refUser: function () {
             return refUser;
         }
-        , refCategory: function () {
-            return refCategory;
+        , refFbProvider: function () {
+            return refFbProvider;
         }
-        , refOrder: function () {
-            return refOrder;
+        , refCart: function () {
+            return refCart;
+        }
+        , refOrderHistory: function () {
+            return refOrderHistory;
         }
         , refFeatured: function () {
             return refFeatured;
         }
+        , refCategory: function () {
+            return refCategory;
+        }
         , refMenu: function () {
             return refMenu;
         }
-        , refFbProvider: function () {
-            return refFbProvider;
+        , refStoreControl: function () {
+            return refStoreControl;
+        }
+        , refOrder: function () {
+            return refOrder;
         }
     }
 }).factory('sharedUtils', ['$ionicLoading', '$ionicPopup', function ($ionicLoading, $ionicPopup) {
@@ -88,7 +104,7 @@ angular.module('app.services', []).factory('fireBaseData', function ($firebase) 
             }
             var alertPopup = $ionicPopup.alert({
                 title: "Done"
-                , template: "You have added " + item.name + " to your tray"
+                , template: "You have added\n " + item.name + " to your tray"
             });
         });
     };

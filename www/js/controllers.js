@@ -299,7 +299,7 @@ angular.module('app.controllers', [])
         fireBaseData.refMenu().child(item.$id).once("value", function (snapshot) {
             if(snapshot.val().subcategory) {
                 // This item has subcategory. Let's bring up the subcategory menu
-                $rootScope.current_subcategory = item.$id+'_subcategory'; //Save current category id
+                $rootScope.current_subcategory = item.$id; //Save current category id
                 $rootScope.item_name = snapshot.val().name;
 
                 $state.go('subcategoryitem', {}, {
@@ -499,41 +499,56 @@ angular.module('app.controllers', [])
         var currentTime = currentDate.getTime();
         var jsonOrderList = {};
 
-        // UPDATE for the rest of the items to the JSON
-        jsonOrderList.name = $scope.user_info.displayName;
-        jsonOrderList.timeDate = currentTime; 
-        jsonOrderList.orderStatus = 'pending';
-        jsonOrderList.item = [];
-        for (var i = 0; i < sharedCartService.cart_items.length; i++) {
-            var jsonOrderItem = {};
-            var orderKey = 'item'+i;
-            jsonOrderItem.itemName = sharedCartService.cart_items[i].item_name;
-            jsonOrderItem.itemPrice = sharedCartService.cart_items[i].item_price;
-            jsonOrderItem.itemQty = sharedCartService.cart_items[i].item_qty;
-            
-            jsonOrderList["item"].push(jsonOrderItem);
-            
-            totalPrice += sharedCartService.cart_items[i].item_qty * sharedCartService.cart_items[i].item_price;
-            totalItems += sharedCartService.cart_items[i].item_qty;
-        }
-        newOrder.set(jsonOrderList);
+        // Check if store is now open or close. If closed, ask user to come back during office hour. 
+        fireBaseData.refStoreControl().once("value", function (snapshot) {
 
-        // Remove items in the cart 
-        fireBaseData.refCart().child($scope.user_info.uid).remove();
+            if(snapshot.val().storeOpenStatus) {
+                // store is open
 
-        // Store our order reference
-        fireBaseData.refOrderHistory().child($scope.user_info.uid).push({
-            timeDate: currentTime
-            , key: newOrder.key()
+                // UPDATE for the rest of the items to the JSON
+                jsonOrderList.name = $scope.user_info.displayName;
+                jsonOrderList.timeDate = currentTime; 
+                jsonOrderList.timeDateString = currentDate.toLocaleTimeString() + " " + currentDate.toLocaleDateString()
+                jsonOrderList.orderStatus = 'pending';
+                jsonOrderList.item = [];
+                for (var i = 0; i < sharedCartService.cart_items.length; i++) {
+                    var jsonOrderItem = {};
+                    jsonOrderItem.itemName = sharedCartService.cart_items[i].item_name;
+                    jsonOrderItem.itemPrice = sharedCartService.cart_items[i].item_price;
+                    jsonOrderItem.itemQty = sharedCartService.cart_items[i].item_qty;
+
+                    jsonOrderList["item"].push(jsonOrderItem);
+
+                    totalPrice += sharedCartService.cart_items[i].item_qty * sharedCartService.cart_items[i].item_price;
+                    totalItems += sharedCartService.cart_items[i].item_qty;
+                }
+                newOrder.set(jsonOrderList);
+
+                // Remove items in the cart 
+                fireBaseData.refCart().child($scope.user_info.uid).remove();
+
+                // Store our order reference
+                var orderRefId = fireBaseData.refOrderHistory().child($scope.user_info.uid).push({
+                    timeDate: currentTime
+                    , key: newOrder.key()
+                });
+
+                sharedUtils.showAlert("Done ", 
+                    "You have placed order for " + totalItems + 
+                    " items. Total price is RM" + totalPrice/100 + ". We shall confirm & inform you when your order is ready");
+
+
+            } else {
+                sharedUtils.showAlert(snapshot.val().storeClosedTitle, 
+                    snapshot.val().storeClosedMessage);
+
+            }
         });
-        
-        sharedUtils.showAlert("Done ", 
-            "You have placed order for " + totalItems + 
-            " items. Total price is RM" + totalPrice/100 + ". We shall confirm & inform you when your order is ready");
+
     };
 })
 
-.controller('lastOrdersCtrl', function ($scope, $rootScope, fireBaseData, sharedUtils) {
+.controller('orderStatusCtrl', function ($scope, $state, $window, $rootScope, fireBaseData, $firebaseArray, sharedUtils) {
 
     $rootScope.extras = true;
     sharedUtils.showLoading();
@@ -543,22 +558,49 @@ angular.module('app.controllers', [])
         if (user) {
             $scope.user_info = user;
 
-            fireBaseData.refOrder()
-                .orderByChild('user_id')
-                .startAt($scope.user_info.uid).endAt($scope.user_info.uid)
-                .once('value', function (snapshot) {
-                    $scope.orders = snapshot.val();
-                    $scope.$apply();
+            $scope.OrderHistoryListener  = new fireBaseData.refOrderHistory();
+            $scope.OrderHistoryListener
+                .child($scope.user_info.uid)
+                .on('value', function(snapshot){
+
+                var orders = 0;
+                $scope.orderHistory = [];
+
+                // Get the order key for the user from Order History
+                snapshot.forEach(function(data) {
+                    var childData = data.val(); // data are in childData.key and childData.timeDate
+
+                    // From the order Key, get order items
+                    fireBaseData.refOrder()
+                        .child(childData.key)
+                        .once('value', function (orderSnapshot) {
+
+                            // Define orderHistory as OBJECT, so we can access them as "$scope.orderHistory[i].timeString"
+                            $scope.orderHistory[orders] = {
+                                timeString: orderSnapshot.child('timeDateString').val()
+                                , orderStatus: orderSnapshot.child('orderStatus').val()
+                                , orderItems: orderSnapshot.child('item').val().length
+                            };
+                        orders ++ ;
+                    });
                 });
+            });
             sharedUtils.hideLoading();
         }
     });
     
-    $scope.initLastOrders(){
-        
+    $scope.$on('$ionicView.enter', function (ev) {
+        if (ev.targetScope !== $scope) {
+            $ionicHistory.clearHistory();
+            $ionicHistory.clearCache();            
+        }
+        // load order histories
+
+    });
+    
+    $scope.RefreshStatus = function (){
+        $window.location.reload();
     }
-
-
 })
 
 .controller('favouriteCtrl', function ($scope, $rootScope) {
@@ -681,9 +723,9 @@ angular.module('app.controllers', [])
                     , type: 'button-assertive'
                     , onTap: function () {
                         return del_id;
+                        }
                     }
-}
-]
+            ]
         });
 
         confirmPopup.then(function (res) {

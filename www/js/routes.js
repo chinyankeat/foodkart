@@ -66,10 +66,10 @@ angular.module('app.routes', [])
     controller: 'myCartCtrl'
   })
 
-  .state('lastOrders', {
+  .state('orderStatus', {
     url: '/page10',
-    templateUrl: 'templates/lastOrders.html',
-    controller: 'lastOrdersCtrl'
+    templateUrl: 'templates/orderStatus.html',
+    controller: 'orderStatusCtrl'
   })
 
   .state('favourite', {

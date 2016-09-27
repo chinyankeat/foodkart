@@ -3,7 +3,8 @@
 
         <div ng-repeat="item in menu" >
            
-            <div ng-if="menu[$index].category === current_subcategory" style="padding:1px;border-top:1px solid #999">
+            <div ng-if="menu[$index].category === current_subcategory && menu[$index].available == true" 
+               style="padding:1px;border-top:1px solid #999">
                 <a class="item item-icon-right " href="#"  style="border-width: 0px; border-style: none;" >
                     <p ng-click="addToCart(menu[$index])" style="font-size: 14px;text-align:left;">
                         {{menu[$index].name}}

@@ -1,0 +1,31 @@
+<ion-view style="" class=" " id="page10" title="Order Status">
+    <ion-content class="has-header" padding="true" >
+
+        <div style="padding:15px;">
+            <a style="min-width: 100%;border-radius: 0px;" ng-click="RefreshStatus()"  class="button button-lite">Refresh</a>
+        </div>         
+       
+       
+        <div class="row" ng-repeat="order in orderHistory" style="border-top: 1px solid #999;" >
+            <a class="item item-icon-right " href="#"  style="border-width: 0px; border-style: none;" >
+                <p style="font-size: 13px;text-align:left;">
+
+                        Order for your {{orderHistory[$index].orderItems}} items <br>
+                        placed on {{orderHistory[$index].timeString}} <br>
+                        is {{orderHistory[$index].orderStatus}}
+                    </p>
+                </p>
+                <div ng-if="orderHistory[$index].orderStatus === 'pending'">
+                    <i style="font-size: 20px; margin-right:0px;right:0px;" class="icon ion-android-clipboard"></i>
+                </div>
+                <div ng-if="orderHistory[$index].orderStatus === 'processing'">
+                    <i style="font-size: 20px; margin-right:0px;right:0px;" class="icon ion-android-time"></i>
+                </div>
+                <div ng-if="orderHistory[$index].orderStatus === 'ready'">
+                    <i style="font-size: 20px; margin-right:0px;right:0px;" class="icon ion-android-checkbox-outline"></i>
+                </div>
+            </a>
+        </div>
+   
+    </ion-content>
+</ion-view>
